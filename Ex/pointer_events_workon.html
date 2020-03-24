@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="HandheldFriendly" content="true"/>
+
+    <title>Pointer events</title>
+	
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/myscript/4.3.0/myscript.min.css"/> <!-- "../../dist/myscript.min.css" -->
+    <!-- <link rel="stylesheet" href="../examples.css"> -->
+    <!-- <link rel="stylesheet" href="../../dist/myscript.min.css"/> -->
+    <!-- <link rel="stylesheet" href="../examples.css"> -->
+    <style>
+      nav{
+        justify-content : unset;
+      }
+
+      #editor {
+        height : 75vh;
+      }
+
+      textarea {
+        width: 100vw;
+        height: calc(30vh - 115px);
+      }
+
+      #pointerEvents {
+        position: absolute;
+        right: 12px;
+        bottom: 12px;
+      }
+
+    </style>
+
+    <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
+    <!-- <script type="text/javascript" src="../../dist/myscript.min.js"></script> -->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/myscript/4.3.0/myscript.min.js"></script> <!-- "../../dist/myscript.min.js" -->	
+  </head>
+
+  <body>
+    <div>
+      <div id="editor" touch-action="none"></div>
+	  
+      <textarea id="pointerEventsObject"></textarea>
+  
+      <button class="classic-btn" id="pointerEvents">Process</button>
+    </div>
+	
+	<script>
+      var editorElement = document.getElementById('editor');
+      var pointerEventsElement = document.getElementById('pointerEvents');
+      var pointerEventsObjectElement = document.getElementById('pointerEventsObject');
+	  	  
+	  function transferComplete(evt) {
+		  coorJSONstring = JSON.stringify(reqXHTTP.responseText); 
+		  console.log(coorJSONstring);
+		  var coorJSONObj = JSON.parse(coorJSONstring);
+		  console.log(coorJSONObj);
+		}	  
+	  
+	  // ===================================================================================================
+		
+	  var read_OTF_File_name = new XMLHttpRequest();
+	  read_OTF_File_name.onreadystatechange = function () {
+	      if((this.readyState == 4 && this.status == 200) || (this.readyState == 4 && this.status == 0)) {
+		  
+		    // Reading "OTF_File.txt" file, & creating JavaScript Object out of the file content
+			// JSON.parse() method parses a JSON string, constructing JavaScript Value/Object
+		  	var OTF_FileName = JSON.parse(read_OTF_File_name.responseText);	
+			// console.log(OTF_FileName);
+			// console.log(JSON.stringify(OTF_FileName));
+			
+			// Converting JavaScript Object to JSON String
+			// JSON.stringify() method converts a JavaScript Value/Object to a JSON String			
+			// Populating the <textarea id="pointerEventsObject"></textarea>
+			document.getElementById("pointerEventsObject").value = JSON.stringify(OTF_FileName);
+			
+			// Automatic content send
+			editorElement.editor.pointerEvents(OTF_FileName);
+		  }
+	  }
+	  read_OTF_File_name.open("GET", "../OTF_File.txt", true);
+	  read_OTF_File_name.send();
+		
+	  // ===================================================================================================
+	  
+      pointerEventsElement.addEventListener('click', function () {
+	    // Convert into a JavaScript Object
+        var pointerEventsObject = JSON.parse(pointerEventsObjectElement.value);
+        //console.log('Pointer events being processed', pointerEventsObject);
+        editorElement.editor.pointerEvents(pointerEventsObject);
+      });
+
+      /**
+       * Attach an editor to the document
+       * @param {Element} The DOM element to attach the ink paper
+       * @param {Object} The recognition parameters
+       */
+	  var read_User_Keys = new XMLHttpRequest();
+	  read_User_Keys.onreadystatechange = function() {
+		  if((this.readyState == 4 && this.status == 200) || (this.readyState == 4 && this.status == 0)) {
+			  var user_keys_R_JSON = JSON.parse(read_User_Keys.responseText);
+			   
+			  var appKey = JSON.stringify(user_keys_R_JSON.applicationKey).replace(/"/g, '');
+			  var macKey = JSON.stringify(user_keys_R_JSON.hmacKey).replace(/"/g, '');
+				   
+			  MyScript.register(editorElement, {
+				recognitionParams: {
+				  server: {
+					scheme: 'https',
+					host: 'webdemoapi.myscript.com',
+					applicationKey: appKey, //'dbf7b554-aa0b-4a9b-8b99-489791841b6a', //'515131ab-35fa-411c-bb4d-3917e00faf60',
+					hmacKey: macKey //'30592bca-fb5a-4fcb-8c2b-2b40938dce6b', //'54b2ca8a-6752-469d-87dd-553bb450e9ad'
+				  }
+				}
+			  });
+			}
+	  };
+	  read_User_Keys.open("GET", "../Localindex/user_keys_R.json", true);
+	  read_User_Keys.send();
+
+      window.addEventListener('resize', function () {
+        editorElement.editor.resize();
+      });
+    </script>
+  </body>
+
+</html>

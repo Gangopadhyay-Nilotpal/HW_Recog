@@ -1,0 +1,25 @@
+{
+  "name": "watchfolder",
+  "version": "1.0.0",
+  "description": "Keep track of Folder to check new file has arrived.",
+  "main": "WatchFolder.js",
+  "scripts": {
+    "build": "browserify -r fs -r buffer -r util WatchFolder.js -o bundle.js"
+  },
+  "author": "Nilotpal",
+  "license": "ISC",
+  "dependencies": {
+    "browserfs": "^1.4.3",
+    "browserify": "^16.5.0",
+    "buffer": "^5.5.0",
+    "chokidar": "^3.3.1",
+    "fs": "0.0.1-security",
+    "fs-extra": "^8.1.0",
+    "fs2": "^0.3.7",
+    "path": "^0.12.7",
+    "require": "^2.4.20",
+    "rimraf": "^3.0.2",
+    "sys": "0.0.1",
+    "util": "^0.12.2"
+  }
+}
